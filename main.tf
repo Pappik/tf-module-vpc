@@ -57,10 +57,9 @@ resource "aws_route_table" "public" {
     count          = length(aws_subnet.public)
     subnet_id      = aws_subnet.public.*.id[count.index]
     route_table_id = aws_route_table.public
-  }
 
-  tags = merge(local.common_tags, { Name = "${var.env}-public_route_table"} )
-}
+    tags = merge(local.common_tags, { Name = "${var.env}-public_route_table"} )
+  }
 
 resource "aws_eip" "eip" {
    domain   = "vpc"
@@ -71,9 +70,4 @@ resource "aws_nat_gateway" "ngw" {
   subnet_id     = aws_subnet.public.*.id[0]
 
   tags = merge(local.common_tags, { Name = "${var.env}-natgw"} )
-}
-
-  # To ensure proper ordering, it is recommended to add an explicit dependency
-  # on the Internet Gateway for the VPC.
-
 }
