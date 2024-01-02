@@ -38,3 +38,42 @@ resource "aws_internet_gateway" "igw" {
   tags = merge(local.common_tags, { Name = "${var.env}-igw"} )
 
 }
+
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+
+  route {
+    cidr_block                = data.aws_vpc.default.cidr_block
+    vpc_peering_connection_id = aws_vpc_peering_connection.peering.id
+  }
+}
+
+  resource "aws_route_table_association" "public-rt-assoc" {
+    count          = length(aws_subnet.public)
+    subnet_id      = aws_subnet.public.*.id[count.index]
+    route_table_id = aws_route_table.public
+  }
+
+  tags = merge(local.common_tags, { Name = "${var.env}-public_route_table"} )
+}
+
+resource "aws_eip" "eip" {
+   domain   = "vpc"
+}
+
+resource "aws_nat_gateway" "ngw" {
+  allocation_id = aws_eip.eip.id
+  subnet_id     = aws_subnet.public.*.id[0]
+
+  tags = merge(local.common_tags, { Name = "${var.env}-natgw"} )
+}
+
+  # To ensure proper ordering, it is recommended to add an explicit dependency
+  # on the Internet Gateway for the VPC.
+
+}
