@@ -59,8 +59,6 @@ resource "aws_route_table" "public" {
     count          = length(aws_subnet.public)
     subnet_id      = aws_subnet.public.*.id[count.index]
     route_table_id = aws_route_table.public
-
-
   }
 
 resource "aws_eip" "eip" {
@@ -72,4 +70,26 @@ resource "aws_nat_gateway" "ngw" {
   subnet_id     = aws_subnet.public.*.id[0]
 
   tags = merge(local.common_tags, { Name = "${var.env}-natgw"} )
+}
+
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.ngw.id
+  }
+
+  route {
+    cidr_block                = data.aws_vpc.default.cidr_block
+    vpc_peering_connection_id = aws_vpc_peering_connection.peering.id
+  }
+  tags = merge(local.common_tags, { Name = "${var.env}-private_route_table"} )
+
+}
+
+resource "aws_route_table_association" "private-rt-assoc" {
+  count          = length(aws_subnet.private)
+  subnet_id      = aws_subnet.private.*.id[count.index]
+  route_table_id = aws_route_table.private
 }
