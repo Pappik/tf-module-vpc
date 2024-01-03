@@ -1,4 +1,4 @@
-module "subnets" {
+module "subnet" {
   source = "./subnets"
 
   availability_zone = var.availability_zone
