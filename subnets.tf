@@ -46,14 +46,14 @@
 #  tags = merge(local.common_tags, { Name = "${var.env}-ngw"} )
 #}
 
-module "subnet" {
+module "public_subnets" {
   source = "./subnets"
 
   availability_zone = var.availability_zone
   default_vpc_id = var.default_vpc_id
   env = var.env
 
-  for_each = var.subnets
+  for_each = var.public_subnets
   cidr_block = each.value.cidr_block
   name       = each.value.name
   internet_gw = lookup(each.value, "internet_gw", false )
