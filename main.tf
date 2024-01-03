@@ -21,4 +21,12 @@ resource "aws_internet_gateway" "igw" {
 
 }
 
+resource "aws_eip" "ngw_eip" {
+  vpc = true
+}
 
+resource "aws_nat_gateway" "ngw" {
+  subnet_id = var.public_subnets
+
+  tags = merge(local.common_tags, { Name = "${var.env}-ngw"} )
+}
