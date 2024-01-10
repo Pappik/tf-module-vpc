@@ -45,15 +45,3 @@ resource "aws_route" "nat_gw_route" {
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = var.nat_gw_id
 }
-resource "aws_default_route_table" "vpc_to_default" {
-  default_route_table_id = data.aws_vpc.default.main_route_table_id
-
-  route {
-    cidr_block        = var.cidr_block
-    vpc_peering_connection_id = var.vpc_peering_connection_id
-  }
-
-
-  tags = merge(local.common_tags, { Name = "${var.env}-${var.name}-newvpc" } )
-
-}

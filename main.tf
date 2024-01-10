@@ -31,3 +31,17 @@ resource "aws_nat_gateway" "ngw" {
 
   tags = merge(local.common_tags, { Name = "${var.env}-ngw"} )
 }
+
+
+resource "aws_default_route_table" "vpc_to_default" {
+  default_route_table_id = data.aws_vpc.default.main_route_table_id
+
+  route {
+    cidr_block        = aws_vpc.main.cidr_block
+    vpc_peering_connection_id = var.vpc_peering_connection_id
+}
+
+
+tags = merge(local.common_tags, { Name = "${var.env}-${var.name}-newvpc" } )
+
+}
