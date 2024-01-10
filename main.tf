@@ -33,15 +33,8 @@ resource "aws_nat_gateway" "ngw" {
 }
 
 
-resource "aws_default_route_table" "vpc_to_default" {
-  default_route_table_id = data.aws_vpc.default.main_route_table_id
-
-  route {
-    cidr_block        = aws_vpc.main.cidr_block
-    vpc_peering_connection_id = aws_vpc_peering_connection.peering.id
-}
-
-
-tags = merge(local.common_tags, { Name = "${var.env}-newvpc" } )
-
+resource "aws_route" "r" {
+  route_table_id = data.aws_vpc.default.main_route_table_id
+  destination_cidr_block = var.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering.id
 }
