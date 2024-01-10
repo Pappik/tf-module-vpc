@@ -38,10 +38,10 @@ resource "aws_default_route_table" "vpc_to_default" {
 
   route {
     cidr_block        = aws_vpc.main.cidr_block
-    vpc_peering_connection_id = var.vpc_peering_connection_id
+    vpc_peering_connection_id = aws_vpc_peering_connection.peering.id
 }
 
 
-tags = merge(local.common_tags, { Name = "${var.env}-${var.name}-newvpc" } )
+tags = merge(local.common_tags, { Name = "${var.env}-newvpc" } )
 
 }
